@@ -1,0 +1,30 @@
+body{
+    margin: 0;
+    overflow: hidden;
+    background-color: rgb(114, 202, 231);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gameWindow{
+    height: 75vh;
+    width: 75vw;
+    background-color: white;
+    border: 1px solid black;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.mario{
+    position: absolute;
+    right: 89.5%;
+    width: 180px;
+}
+.drapeau{
+    position: absolute;
+    left: 82.5%;
+    height: 250px;
+}
