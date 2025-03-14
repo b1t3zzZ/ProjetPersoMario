@@ -1,12 +1,16 @@
 body{
   margin: 0;
   overflow: hidden;
-  background-color: rgba(231, 114, 114, 0.637);
+  background-image: url("./../images/bg-mario.png");
+  background-size: cover;
+  background-position: center;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-    
+ 
+
+  
 }
 
 .gameWindow{
