@@ -38,13 +38,14 @@ body {
 }
 
 /* From Uiverse.io by Smit-Prajapati */
+/* From Uiverse.io by chase2k25 */
 .button {
-  display: inline-block;
-  user-select: none;
   cursor: pointer;
   padding: 12px 18px;
   border-radius: 30px;
   border: 5px solid #e50000;
+  /*display: none;*/
+  display: inline-block;
   overflow: hidden;
   background: red;
   box-shadow:
@@ -111,6 +112,17 @@ body {
     inset 2px 2px 1px rgba(0, 0, 0, 0.3),
     inset -2px -2px 1px rgba(255, 255, 255, 0.5);
   transform: scale(0.98);
-  
-  
+}
+
+.game {
+  display: none;
+  width: 75vw;
+  height: 75vh;
+  /*display: block;*/
+}
+
+canvas {  
+  display: none;
+  border: 1px solid #000000e7;
+  background-color: #00ccff;
 }

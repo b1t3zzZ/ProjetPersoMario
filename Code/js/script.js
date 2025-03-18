@@ -10,3 +10,19 @@ function hideButtonStart() {
         hide.style.display = "none";
     }, 1000)
 }
+
+function openGameMario() {
+
+    const canvasStart = document.getElementById("canvasStart")
+
+    setTimeout(function (){
+        canvasStart.style.display = "flex";
+    },760)
+
+
+
+
+
+
+
+}

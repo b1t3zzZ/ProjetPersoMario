@@ -13,21 +13,31 @@
 
     <!-- Основной класс -->
     <div class="gameWindow">
-        <button class="button" id="hide" onclick="hideButtonStart()">
+
+        <button class="button" id="hide" onclick="hideButtonStart(), openGameMario()">
             <span>S</span>
             <span>T</span>
             <span>A</span>
             <span>R</span>
             <span>T</span>
         </button>
+        <div class="game" onload="startGame()">
+        
 
+
+
+
+
+
+            
+        </div>
     </div>
     <img src="./images/mario.png" alt="" class="mario">
     <img src="./images/drapeau.png" alt="" class="drapeau">
 
 </body>
 <script src="./js/script.js"></script>
-
+<script src="./js/app.js"></script>
 
 
 </html>
