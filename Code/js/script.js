@@ -15,9 +15,9 @@ function openGameMario() {
 
     const canvasStart = document.getElementById("canvasStart")
 
-    setTimeout(function (){
+    setTimeout(function () {
         canvasStart.style.display = "flex";
-    },760)
+    }, 760)
 
 
 

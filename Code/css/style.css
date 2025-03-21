@@ -121,7 +121,7 @@ body {
   /*display: block;*/
 }
 
-canvas {  
+canvas {
   display: none;
   border: 1px solid #000000e7;
   background-color: #00ccff;
