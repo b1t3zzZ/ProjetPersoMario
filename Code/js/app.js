@@ -56,17 +56,6 @@ const Level = class Level {
     }
 }
 
-//Символы за что отвечают
-const levelChars = {
-    ".": "empty",
-    "#": "wall",
-    "+": "lava",
-    "@": Player,
-    "o": coin,
-    "=": Lava,
-    "|": Lava,
-    "v": Lava
-}
 
 //Проверка уровня
 const State = class State {
@@ -83,3 +72,57 @@ const State = class State {
     }
 }
 
+//Cложение и умножение векторов на скаляр
+const Vec = class Vec {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+    plus(other) {
+        return new Vec(this.x + other.x, this.y + other.y)
+    }
+    times(factor) {
+        return new Vec(this.x * factor, this.y * factor)
+    }
+}
+
+//Создание класса персонажа
+const Player = class Player {
+    constructor(pos, speed) {
+        this.pos = pos;
+        this.speed = speed;
+    }
+
+    get type() { return "player"; }
+
+    static create(pos) {
+        return new Player(pos.plus(new Vector(0, -0, 5)),
+            new Vec(0, 0));
+    }
+}
+
+Player.prototype.size = new Vec(0.8, 1.5);
+
+//Создание монетки для победы уровня
+const Coin = class Coin
+
+
+
+
+
+
+
+
+
+
+//Символы за что отвечают
+const levelChars = {
+    ".": "empty",
+    "#": "wall",
+    "+": "lava",
+    "@": Player,
+    "o": Coin,
+    "=": Lava,
+    "|": Lava,
+    "v": Lava
+}
