@@ -104,25 +104,27 @@ const Player = class Player {
 Player.prototype.size = new Vec(0.8, 1.5);
 
 //Создание монетки для победы уровня
-const Coin = class Coin
+const Coin = class Coin {
+    constructor(pos, basePos, wobble) {
+        this.pos = pos;
+        this.basePos = basePos;
+        this.wobble = wobble;
+    }
+    get type() { return "coin"; }
 
-
-
-
-
-
-
-
-
+    static create(pos) {
+        const basePos = pos.plus(new Vec(0.2, 0.1))
+        return new Coin(basePos, basePos,
+            Math.random() * Math.PI * 2);
+    }
+}
+Coin.prototype.size = new Vec(0.6, 0.6)
 
 //Символы за что отвечают
 const levelChars = {
     ".": "empty",
     "#": "wall",
-    "+": "lava",
     "@": Player,
     "o": Coin,
-    "=": Lava,
-    "|": Lava,
-    "v": Lava
+
 }

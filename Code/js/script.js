@@ -21,7 +21,7 @@ function openGameMario() {
         canvasStart.style.display = "flex";
 
         const startMusic = new Audio("./sounds/debutMario.mp3")
-        startMusic.volume = 0.15;
+        startMusic.volume = 0.1;
         startMusic.loop = true;
         startMusic.play();
     }, 760)
