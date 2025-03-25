@@ -15,7 +15,7 @@ const myGameArea = {
         this.canvas.style.position = "absolute";
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.interval = setInterval(updateGameArea, 20);
+        this.interval = setInterval(updateGameArea, 10);
 
         this.keys = [];
 
@@ -53,7 +53,7 @@ function component(width, height, imageSrc, x, y) {
     this.speedY = 0;
     this.gravity = 0.5;
     this.gravitySpeed = 0;
-    this.jumpStrenght = -12;
+    this.jumpStrenght = -15;
     this.backdown = 0;
     this.isJumping = false;
     // Обновление компонента, рисуем изображение
@@ -105,8 +105,8 @@ function updateGameArea() {
     myGamePiece.speedY = 0;
 
     // Управление движением
-    if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -15; }  // Влево
-    if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 15; }   // Вправо
+    if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -6; }  // Влево
+    if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 6; }   // Вправо
     if (myGameArea.keys && myGameArea.keys[38]) { myGamePiece.jump(); }  // Прыжок (вверх)
 
     myGamePiece.update();
