@@ -1,8 +1,11 @@
+//Запуск игры
 function startGame() {
     myGamePiece = new component(35, 55, './images/playerMario.png', 194, 507);
     myGameArea.start();
 }
 
+
+//Canvas окно
 const myGameArea = {
     canvas: document.createElement("canvas"),
     start: function () {
@@ -41,7 +44,7 @@ const myGameArea = {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 };
-
+//Функция по созднанию объекта
 function component(width, height, imageSrc, x, y) {
     this.width = width;
     this.height = height;
@@ -90,14 +93,25 @@ function component(width, height, imageSrc, x, y) {
         }
     }
 
+
+//Прыжок с звуко сопровождением
     this.jump = function () {
+        const marioJump = new Audio("./sounds/mario-jump.mp3")
+        marioJump.volume = 0.4;
+
         if (!this.isJumping) {
             this.gravitySpeed = this.jumpStrenght;
             this.isJumping = true;
+
+            if (!marioJump.paused) {
+                marioJump.currentTime = 0; // Перематываем звук на начало
+            }
+            marioJump.play();
         }
     }
 }
 
+//Обновление площади и назначение кнопок
 function updateGameArea() {
     myGameArea.clear();
 
@@ -105,12 +119,14 @@ function updateGameArea() {
     myGamePiece.speedY = 0;
 
     // Управление движением
-    if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -6; }  // Влево
-    if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 6; }   // Вправо
+    if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -7; }  // Влево
+    if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 7; }   // Вправо
     if (myGameArea.keys && myGameArea.keys[38]) { myGamePiece.jump(); }  // Прыжок (вверх)
+    if (myGameArea.keys[37] && myGameArea.keys[39]) { myGamePiece.speedX = 0; }//Если нажаты две - то остановка
 
     myGamePiece.update();
     myGamePiece.newPos();
 }
 
+//Запуск игры
 startGame();

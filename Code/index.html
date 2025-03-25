@@ -13,7 +13,7 @@
 
     <!-- Основной класс -->
     <div class="gameWindow">
-
+        <!-- Класс для кнопки старт -->
         <button class="button" id="hide" onclick="hideButtonStart(), openGameMario()">
             <span>S</span>
             <span>T</span>
@@ -21,6 +21,7 @@
             <span>R</span>
             <span>T</span>
         </button>
+        <!-- Запуск игры -->
         <div class="game" onload="startGame()">
 
 
@@ -32,10 +33,12 @@
 
         </div>
     </div>
+    <!-- Иконки на экране -->
     <img src="./images/mario.png" alt="" class="mario">
     <img src="./images/drapeau.png" alt="" class="drapeau">
 
 </body>
+<!-- Подключение скриптов JS -->
 <script src="./js/script.js"></script>
 <script src="./js/app.js"></script>
 <script src="./js/canvas.js"></script>
