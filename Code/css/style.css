@@ -40,6 +40,7 @@ body {
 /* From Uiverse.io by Smit-Prajapati */
 /* From Uiverse.io by chase2k25 */
 .button {
+  user-select: none;
   cursor: pointer;
   padding: 12px 18px;
   border-radius: 30px;
@@ -124,5 +125,5 @@ body {
 canvas {
   display: none;
   border: 1px solid #000000e7;
-  background-color: #00ccff;
+  background-image: url("../images/backgroundMario.png");
 }
