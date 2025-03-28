@@ -1,6 +1,8 @@
 //Запуск игры
 function startGame() {
     myGamePiece = new component(35, 55, './images/playerMario.png', 194, 507);
+    myGameBrick = new component(40, 40, './images/terraMario.png',200, 600);
+    myGameLucky = new component(40, 40, './images/luckyMario.png', 240, 600)
     myGameArea.start();
 }
 
@@ -123,6 +125,14 @@ function updateGameArea() {
     if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 7; }   // Вправо
     if (myGameArea.keys && myGameArea.keys[38]) { myGamePiece.jump(); }  // Прыжок (вверх)
     if (myGameArea.keys[37] && myGameArea.keys[39]) { myGamePiece.speedX = 0; }//Если нажаты две - то остановка
+
+    myGameBrick.update();
+    myGameBrick.newPos();
+
+    myGameLucky.update();
+    myGameLucky.newPos();
+
+    
 
     myGamePiece.update();
     myGamePiece.newPos();

@@ -20,6 +20,7 @@ function openGameMario() {
     setTimeout(function () {
         canvasStart.style.display = "flex";
 
+
         const startMusic = new Audio("./sounds/debutMario.mp3")
         startMusic.volume = 0.1;
         startMusic.loop = true;
@@ -27,8 +28,7 @@ function openGameMario() {
     }, 760)
 
 
-
-
+   
 
 
 
