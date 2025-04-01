@@ -125,5 +125,5 @@ body {
 canvas {
   display: none;
   border: 1px solid #000000e7;
-  background-image: url("../images/backgroundMario.png");
+  background-color: lightblue;
 }

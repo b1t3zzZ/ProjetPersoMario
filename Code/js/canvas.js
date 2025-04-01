@@ -1,3 +1,6 @@
+let myGamePiece; // Игрок
+let allComponents; // Все компоненты игры
+
 // Создание компонентов
 function createComponents() {
     const components = [];
@@ -7,7 +10,7 @@ function createComponents() {
         ".............................................................",
         ".............................................................",
         ".............................................................",
-        ".............................................................",
+        ".................==..........................................",
         ".............................................................",
         ".............................................................",
         ".............................................................",
@@ -19,9 +22,8 @@ function createComponents() {
         "#..........##..........##....................................",
         "#.........###..........###...................................",
         "#........####..........####..................................",
-        "#.......#####..........#####..........#......................",
+        "#.@.....#####.^......^.#####......<...#......................",
         "#######################################################......",
-
     ];
 
     // Перебор карты уровня
@@ -39,30 +41,29 @@ function createComponents() {
                     components.push(new component(40, 40, './images/blockMario.png', x, y));
                     break;
                 case '@':
-                    components.push(new component(35, 55, './images/playerMario.png', x, y));  // Игрок может иметь немного другие размеры
+                    myGamePiece = new component(35, 55, './images/playerMario.png', x, y);  // Игрок может иметь немного другие размеры
                     break;
                 case 'O':
                     components.push(new component(40, 40, './images/luckyMario.png', x, y));
                     break;
                 case '^':
-                    components.push(new component(40, 40, './images/luckyMario.png', x, y));
+                    components.push(new component(35, 35, './images/mushroomMario.png', x, y));
                     break;
                 case '<':
-                    components.push(new component(40, 40, './images/luckyMario.png', x, y));
+                    components.push(new component(35, 35, './images/mushroomMario.png', x, y));
                     break;
                 default:
                     break;
             }
+            
         }
     }
 
     return components;
-    
 }
 
 // Запуск игры
 function startGame() {
-    myGamePiece = new component(35, 55, './images/playerMario.png', 194, 507);
     myGameArea.start();
 }
 
@@ -116,7 +117,7 @@ function component(width, height, imageSrc, x, y) {
     this.speedY = 0;
     this.gravity = 0.5;
     this.gravitySpeed = 0;
-    this.jumpStrenght = -15;
+    this.jumpStrenght = -13;
     this.isJumping = false;
 
     // Обновление компонента
@@ -137,21 +138,49 @@ function component(width, height, imageSrc, x, y) {
     this.hitSides = function () {
         const rockbottom = myGameArea.canvas.height - this.height;
         const rocksides = myGameArea.canvas.width - this.width;
-
+    
+        // Проверка на выход за границы экрана
         if (this.x > rocksides) {
             this.x = rocksides;
         }
-
+    
         if (this.y > rockbottom) {
             this.y = rockbottom;
             this.gravitySpeed = 0;
             this.isJumping = false;
         }
-
+    
         if (this.x < 0) {
             this.x = 0;
         }
+    
+        // Проверка столкновений с другими компонентами
+        allComponents.forEach(function (comp) {
+            if (comp !== myGamePiece) {
+                // Простое столкновение по осям x и y
+                if (this.x < comp.x + comp.width && this.x + this.width > comp.x && this.y < comp.y + comp.height && this.y + this.height > comp.y) {
+                    
+                    // Игрок сталкивается с объектом
+                    if (this.y + this.height <= comp.y + comp.height / 2) {
+                        // Если игрок стоит на объекте (падает сверху), блокируем падение
+                        this.gravitySpeed = 0;
+                        this.isJumping = false;
+                        this.y = comp.y - this.height;  // Устанавливаем игрока на верхнюю часть объекта
+                    } else {
+                        // Игрок сталкивается с боковой частью объекта
+                        if (this.x + this.width / 2 < comp.x + comp.width / 2) {
+                            // Игрок слева от объекта
+                            this.x = comp.x - this.width;
+                        } else {
+                            // Игрок справа от объекта
+                            this.x = comp.x + comp.width;
+                        }
+                    }
+                }
+            }
+        });
     };
+    
 
     // Прыжок с эффектом
     this.jump = function () {
@@ -170,8 +199,9 @@ function component(width, height, imageSrc, x, y) {
     };
 }
 
+
 // Создание уровня
-const allComponents = createComponents();
+allComponents = createComponents();
 
 // Обновление игрового экрана
 function updateGameArea() {
@@ -180,16 +210,15 @@ function updateGameArea() {
     myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
 
-    if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -7; }  // Влево
-    if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 7; }   // Вправо
+    if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -4; }  // Влево
+    if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 4; }   // Вправо
     if (myGameArea.keys && myGameArea.keys[38]) { myGamePiece.jump(); }  // Прыжок (вверх)
     if (myGameArea.keys[37] && myGameArea.keys[39]) { myGamePiece.speedX = 0; }
 
     // Проход по всем компонентам уровня
-    allComponents.forEach(function(comp) {
-        comp.update(); 
-        comp.hitSides();  // Отрисовка компонента
-   // Обновление позиции компонента
+    allComponents.forEach(function (comp) {
+        comp.update();
+        comp.hitSides();
     });
 
     myGamePiece.update();
