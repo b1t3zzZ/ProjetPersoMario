@@ -1,5 +1,5 @@
 let myGamePiece; // Игрок
-let allComponents; // Все компоненты игры
+let allComponents = []; // Все компоненты игры
 
 // Создание компонентов
 function createComponents() {
@@ -9,8 +9,8 @@ function createComponents() {
         ".............................................................",
         ".............................................................",
         ".............................................................",
-        ".............................................................",
         ".................==..........................................",
+        ".............................................................",
         ".............................................................",
         ".............................................................",
         ".............................................................",
@@ -19,7 +19,7 @@ function createComponents() {
         ".............................................................",
         ".............................................................",
         "#...........#....==....#.....................................",
-        "#..........##..........##....................................",
+        "#..........##....==....##....................................",
         "#.........###..........###...................................",
         "#........####..........####..................................",
         "#.@.....#####.^......^.#####......<...#......................",
@@ -55,7 +55,6 @@ function createComponents() {
                 default:
                     break;
             }
-            
         }
     }
 
@@ -64,6 +63,7 @@ function createComponents() {
 
 // Запуск игры
 function startGame() {
+    allComponents = createComponents(); // Теперь создаем компоненты перед началом игры
     myGameArea.start();
 }
 
@@ -73,7 +73,7 @@ const myGameArea = {
     start: function () {
         this.canvas.id = "canvasStart";
         this.canvas.width = window.innerWidth * 0.75;  // 75% ширины экрана
-        this.canvas.height = window.innerHeight * 0.75;  // 75% высоты экрана
+        this.canvas.height = 720;  // Фиксированная высота
         this.canvas.style.justifyContent = "center";
         this.canvas.style.alignItems = "center";
         this.canvas.style.boxSizing = "border-box";
@@ -138,49 +138,49 @@ function component(width, height, imageSrc, x, y) {
     this.hitSides = function () {
         const rockbottom = myGameArea.canvas.height - this.height;
         const rocksides = myGameArea.canvas.width - this.width;
-    
+
         // Проверка на выход за границы экрана
         if (this.x > rocksides) {
             this.x = rocksides;
         }
-    
+
         if (this.y > rockbottom) {
             this.y = rockbottom;
             this.gravitySpeed = 0;
             this.isJumping = false;
         }
-    
+
         if (this.x < 0) {
             this.x = 0;
         }
-    
+
         // Проверка столкновений с другими компонентами
-        allComponents.forEach(function (comp) {
+        allComponents.forEach((comp) => {
             if (comp !== myGamePiece) {
-                // Простое столкновение по осям x и y
-                if (this.x < comp.x + comp.width && this.x + this.width > comp.x && this.y < comp.y + comp.height && this.y + this.height > comp.y) {
-                    
+                // Проверка столкновений по осям x и y
+                if (myGamePiece.x < comp.x + comp.width && myGamePiece.x + myGamePiece.width > comp.x &&
+                    myGamePiece.y < comp.y + comp.height && myGamePiece.y + myGamePiece.height > comp.y) {
+
                     // Игрок сталкивается с объектом
-                    if (this.y + this.height <= comp.y + comp.height / 2) {
+                    if (myGamePiece.y + myGamePiece.height <= comp.y + comp.height / 2) {
                         // Если игрок стоит на объекте (падает сверху), блокируем падение
-                        this.gravitySpeed = 0;
-                        this.isJumping = false;
-                        this.y = comp.y - this.height;  // Устанавливаем игрока на верхнюю часть объекта
-                    } else {
-                        // Игрок сталкивается с боковой частью объекта
-                        if (this.x + this.width / 2 < comp.x + comp.width / 2) {
-                            // Игрок слева от объекта
-                            this.x = comp.x - this.width;
+                        myGamePiece.gravitySpeed = 0;   // Останавливаем падение
+                        myGamePiece.isJumping = false;  // Останавливаем прыжок
+                        myGamePiece.y = comp.y - myGamePiece.height;  // Устанавливаем игрока на верхнюю часть объекта
+                    } else if (myGamePiece.y + myGamePiece.height > comp.y + comp.height / 2) {
+
+                        // Если игрок находится на нижней части объекта (снизу), запрещаем прыгать
+                        if (myGamePiece.x + myGamePiece.width / 2 < comp.x + comp.width / 2) {
+                            myGamePiece.x = comp.x - myGamePiece.width;
                         } else {
                             // Игрок справа от объекта
-                            this.x = comp.x + comp.width;
+                            myGamePiece.x = comp.x + comp.width;
                         }
                     }
                 }
             }
         });
     };
-    
 
     // Прыжок с эффектом
     this.jump = function () {
@@ -198,10 +198,6 @@ function component(width, height, imageSrc, x, y) {
         }
     };
 }
-
-
-// Создание уровня
-allComponents = createComponents();
 
 // Обновление игрового экрана
 function updateGameArea() {
@@ -225,7 +221,6 @@ function updateGameArea() {
     myGamePiece.newPos();
     myGamePiece.hitSides();
 }
-
 
 // Запуск игры
 startGame();
