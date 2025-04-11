@@ -10,6 +10,11 @@ window.myGameArea = {
 
         this.interval = setInterval(window.updateGameArea, 10);
 
+        // Initialize Matter.js physics engine
+        this.engine = Engine.create();
+        this.runner = Runner.create();
+        Runner.run(this.runner, this.engine);
+
         this.keys = [];
         window.addEventListener('keydown', (e) => {
             this.keys[e.keyCode] = true;

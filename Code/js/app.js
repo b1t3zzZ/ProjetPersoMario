@@ -1,5 +1,16 @@
+// Matter.js module aliases
+var Engine = Matter.Engine,
+    Render = Matter.Render,
+    Runner = Matter.Runner,
+    Bodies = Matter.Bodies,
+    Composite = Matter.Composite,
+    World = Matter.World,
+    Body = Matter.Body;
+
 window.myGamePiece = null;
 window.allComponents = [];
+window.physicsObjects = {}; // Store references to physics bodies
+
 
 function createComponents() {
     const components = [];
@@ -33,22 +44,24 @@ function createComponents() {
 
             switch (char) {
                 case '#':
-                    components.push(new component(40, 40, './images/terraMario.png', x, y));
+                    const terrain = new component(40, 40, './images/terraMario.png', x, y, true);
+                    components.push(terrain);
                     break;
                 case '=':
-                    components.push(new component(40, 40, './images/blockMario.png', x, y));
+                    const block = new component(40, 40, './images/blockMario.png', x, y, true);
+                    components.push(block);
                     break;
                 case '@':
-                    myGamePiece = new component(35,55, "./images/playerMario.png", x, y);
+                    myGamePiece = new component(35, 55, "./images/playerMario.png", x, y, false);
                     break;
                 case 'O':
-                    components.push(new component(40, 40, './images/luckyMario.png', x, y));
+                    const lucky = new component(40, 40, './images/luckyMario.png', x, y, true);
+                    components.push(lucky);
                     break;
                 case '^':
-                    components.push(new component(35, 35, './images/mushroomMario.png', x, y));
-                    break;
                 case '<':
-                    components.push(new component(35, 35, './images/mushroomMario.png', x, y));
+                    const mushroom = new component(35, 35, './images/mushroomMario.png', x, y, false);
+                    components.push(mushroom);
                     break;
             }
         }
@@ -57,53 +70,73 @@ function createComponents() {
     return components;
 }
 
-function component(width, height, imageSrc, x, y) {
+function component(width, height, imageSrc, x, y, isStatic = false) {
     this.width = width;
     this.height = height;
     this.x = x;
     this.y = y;
     this.image = new Image();
     this.image.src = imageSrc;
-    this.speedX = 0;
-    this.speedY = 0;
-    this.gravity = 0.5;
-    this.gravitySpeed = 0;
-    this.jumpStrenght = -13;
-    this.isJumping = false;
-
+    this.isStatic = isStatic;
+    
+    // Create Matter.js body
+    const options = {
+        isStatic: isStatic,
+        friction: 0.01,
+        restitution: 0.2,
+        density: isStatic ? 1 : 0.1
+    };
+    
+    // Create physics body
+    this.body = Bodies.rectangle(x + width/2, y + height/2, width, height, options);
+    
+    // Add to Matter.js world
+    World.add(myGameArea.engine.world, this.body);
+    
+    // Store reference to physics body
+    const bodyId = Math.random().toString(36).substr(2, 9);
+    this.bodyId = bodyId;
+    physicsObjects[bodyId] = this.body;
+    
     this.update = function () {
         if (this.image.complete) {
-            myGameArea.context.drawImage(this.image, this.x, this.y, this.width, this.height);
+            // Update position and rotation from physics engine
+            const pos = this.body.position;
+            const angle = this.body.angle;
+            
+            // Save context, translate and rotate
+            myGameArea.context.save();
+            myGameArea.context.translate(pos.x, pos.y);
+            myGameArea.context.rotate(angle);
+            
+            // Draw image centered
+            myGameArea.context.drawImage(
+                this.image, 
+                -this.width/2, 
+                -this.height/2, 
+                this.width, 
+                this.height
+            );
+            
+            // Restore context
+            myGameArea.context.restore();
+            
+            // Update visual position properties to match physics body
+            this.x = pos.x - this.width/2;
+            this.y = pos.y - this.height/2;
         }
-    };
-
-    this.newPos = function () {
-        this.x += this.speedX;
-        this.gravitySpeed += this.gravity;
-        this.y += this.speedY + this.gravitySpeed;
-    };
-
-    this.hitSides = function () {
-        const rockbottom = myGameArea.canvas.height - this.height;
-        const rocksides = myGameArea.canvas.width - this.width;
-
-        if (this.x > rocksides) this.x = rocksides;
-        if (this.y > rockbottom) {
-            this.y = rockbottom;
-            this.gravitySpeed = 0;
-            this.isJumping = false;
-        }
-        if (this.x < 0) this.x = 0;
     };
 
     this.jump = function () {
         const marioJump = new Audio("./sounds/mario-jump.mp3");
         marioJump.volume = 0.08;
 
-        if (!this.isJumping) {
-            this.gravitySpeed = this.jumpStrenght;
-            this.isJumping = true;
-
+        // Check if character is on ground
+        const yVelocity = Math.abs(this.body.velocity.y);
+        if (yVelocity < 0.1) {
+            // Apply upward force
+            Body.setVelocity(this.body, { x: this.body.velocity.x, y: -13 });
+            
             if (!marioJump.paused) {
                 marioJump.currentTime = 0;
             }
@@ -115,27 +148,82 @@ function component(width, height, imageSrc, x, y) {
 window.updateGameArea = function () {
     myGameArea.clear();
 
-    myGamePiece.speedX = 0;
-    myGamePiece.speedY = 0;
+    // Process keyboard inputs
+    if (myGamePiece) {
+        let xVelocity = 0;
+        
+        if (myGameArea.keys && myGameArea.keys[65]) xVelocity = -4; // A key
+        if (myGameArea.keys && myGameArea.keys[68]) xVelocity = 4;  // D key
+        if (myGameArea.keys && myGameArea.keys[87]) myGamePiece.jump(); // W key
+        
+        // Update player physics velocity
+        if (myGamePiece.body) {
+            Body.setVelocity(myGamePiece.body, {
+                x: xVelocity,
+                y: myGamePiece.body.velocity.y
+            });
+        }
+    }
 
-    if (myGameArea.keys && myGameArea.keys[65]) myGamePiece.speedX = -4;
-    if (myGameArea.keys && myGameArea.keys[68]) myGamePiece.speedX = 4;
-    if (myGameArea.keys && myGameArea.keys[87]) myGamePiece.jump();
-    if (myGameArea.keys[65] && myGameArea.keys[68]) myGamePiece.speedX = 0;
-
+    // Update all game components
     allComponents.forEach((comp) => {
         comp.update();
-        comp.hitSides();
     });
 
-    myGamePiece.update();
-    myGamePiece.newPos();
-    myGamePiece.hitSides();
+    if (myGamePiece) {
+        myGamePiece.update();
+    }
 };
 
-function startGame() {
-    window.allComponents = createComponents();
-    myGameArea.start();
+// Set up world boundaries
+function createBoundaries() {
+    const thickness = 50;
+    const worldWidth = myGameArea.canvas.width;
+    const worldHeight = myGameArea.canvas.height;
+    
+    // Ground
+    const ground = Bodies.rectangle(
+        worldWidth / 2, 
+        worldHeight + thickness / 2, 
+        worldWidth + thickness * 2, 
+        thickness, 
+        { isStatic: true }
+    );
+    
+    // Left wall
+    const leftWall = Bodies.rectangle(
+        -thickness / 2, 
+        worldHeight / 2, 
+        thickness, 
+        worldHeight * 2, 
+        { isStatic: true }
+    );
+    
+    // Right wall
+    const rightWall = Bodies.rectangle(
+        worldWidth + thickness / 2, 
+        worldHeight / 2, 
+        thickness, 
+        worldHeight * 2, 
+        { isStatic: true }
+    );
+    
+    // Add walls to world
+    World.add(myGameArea.engine.world, [ground, leftWall, rightWall]);
 }
 
-startGame();
+function startGame() {
+    myGameArea.start();
+    
+    // Set gravity
+    myGameArea.engine.world.gravity.y = 1;
+    
+    // Create world boundaries
+    createBoundaries();
+    
+    // Create game components
+    window.allComponents = createComponents();
+}
+
+// Initialize the game
+window.onload = startGame;
