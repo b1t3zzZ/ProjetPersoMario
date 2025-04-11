@@ -16,24 +16,24 @@ function createComponents() {
     const components = [];
 
     const levelMap = [
-        ".............................................................",
-        ".............................................................",
-        ".............................................................",
-        ".................==..........................................",
-        ".............................................................",
-        ".............................................................",
-        ".............................................................",
-        ".............................................................",
-        "................=OO=.........................................",
-        ".............................................................",
-        ".............................................................",
-        ".............................................................",
-        "#...........#....==....#.....................................",
-        "#..........##....==....##....................................",
-        "#.........###..........###...................................",
-        "#........####..........####..................................",
-        "#.@.....#####.^......^.#####......<...#......................",
-        "#######################################################......",
+        "####################################",
+        "#..................................#",
+        "#..................................#",
+        ".................==................#",
+        "...................................#",
+        "#..................................#",
+        "#..................................#",
+        "#..................................#",
+        "#...............=OO=...............#",
+        "#..................................#",
+        "#..................................#",
+        "#..................................#",
+        "#...........#....==....#...........#",
+        "#..........##....==....##..........#",
+        "#.........###..........###.........#",
+        "#........####..........####........#",
+        "#.@.....#####.^......^.#####......<#",
+        "####################################",
     ];
 
     for (let row = 0; row < levelMap.length; row++) {
@@ -78,52 +78,52 @@ function component(width, height, imageSrc, x, y, isStatic = false) {
     this.image = new Image();
     this.image.src = imageSrc;
     this.isStatic = isStatic;
-    
+    this.isOnGround = false;
     // Create Matter.js body
     const options = {
         isStatic: isStatic,
-        friction: 0.01,
+        friction: 0.05,
         restitution: 0.2,
         density: isStatic ? 1 : 0.1
     };
-    
+
     // Create physics body
-    this.body = Bodies.rectangle(x + width/2, y + height/2, width, height, options);
-    
+    this.body = Bodies.rectangle(x + width / 2, y + height / 2, width, height, options);
+
     // Add to Matter.js world
     World.add(myGameArea.engine.world, this.body);
-    
+
     // Store reference to physics body
     const bodyId = Math.random().toString(36).substr(2, 9);
     this.bodyId = bodyId;
     physicsObjects[bodyId] = this.body;
-    
+
     this.update = function () {
         if (this.image.complete) {
             // Update position and rotation from physics engine
             const pos = this.body.position;
             const angle = this.body.angle;
-            
+
             // Save context, translate and rotate
             myGameArea.context.save();
             myGameArea.context.translate(pos.x, pos.y);
             myGameArea.context.rotate(angle);
-            
+
             // Draw image centered
             myGameArea.context.drawImage(
-                this.image, 
-                -this.width/2, 
-                -this.height/2, 
-                this.width, 
+                this.image,
+                -this.width / 2,
+                -this.height / 2,
+                this.width,
                 this.height
             );
-            
+
             // Restore context
             myGameArea.context.restore();
-            
+
             // Update visual position properties to match physics body
-            this.x = pos.x - this.width/2;
-            this.y = pos.y - this.height/2;
+            this.x = pos.x - this.width / 2;
+            this.y = pos.y - this.height / 2;
         }
     };
 
@@ -131,12 +131,15 @@ function component(width, height, imageSrc, x, y, isStatic = false) {
         const marioJump = new Audio("./sounds/mario-jump.mp3");
         marioJump.volume = 0.08;
 
+
+
+    
         // Check if character is on ground
         const yVelocity = Math.abs(this.body.velocity.y);
         if (yVelocity < 0.1) {
             // Apply upward force
-            Body.setVelocity(this.body, { x: this.body.velocity.x, y: -13 });
-            
+            Body.setVelocity(this.body, { x: this.body.velocity.x, y: -14 });
+
             if (!marioJump.paused) {
                 marioJump.currentTime = 0;
             }
@@ -151,11 +154,11 @@ window.updateGameArea = function () {
     // Process keyboard inputs
     if (myGamePiece) {
         let xVelocity = 0;
-        
+
         if (myGameArea.keys && myGameArea.keys[65]) xVelocity = -4; // A key
         if (myGameArea.keys && myGameArea.keys[68]) xVelocity = 4;  // D key
         if (myGameArea.keys && myGameArea.keys[87]) myGamePiece.jump(); // W key
-        
+
         // Update player physics velocity
         if (myGamePiece.body) {
             Body.setVelocity(myGamePiece.body, {
@@ -180,47 +183,47 @@ function createBoundaries() {
     const thickness = 50;
     const worldWidth = myGameArea.canvas.width;
     const worldHeight = myGameArea.canvas.height;
-    
+
     // Ground
     const ground = Bodies.rectangle(
-        worldWidth / 2, 
-        worldHeight + thickness / 2, 
-        worldWidth + thickness * 2, 
-        thickness, 
+        worldWidth / 2,
+        worldHeight + thickness / 2,
+        worldWidth + thickness * 2,
+        thickness,
         { isStatic: true }
     );
-    
+
     // Left wall
     const leftWall = Bodies.rectangle(
-        -thickness / 2, 
-        worldHeight / 2, 
-        thickness, 
-        worldHeight * 2, 
+        -thickness / 2,
+        worldHeight / 2,
+        thickness,
+        worldHeight * 2,
         { isStatic: true }
     );
-    
+
     // Right wall
     const rightWall = Bodies.rectangle(
-        worldWidth + thickness / 2, 
-        worldHeight / 2, 
-        thickness, 
-        worldHeight * 2, 
+        worldWidth + thickness / 2,
+        worldHeight / 2,
+        thickness,
+        worldHeight * 2,
         { isStatic: true }
     );
-    
+
     // Add walls to world
     World.add(myGameArea.engine.world, [ground, leftWall, rightWall]);
 }
 
 function startGame() {
     myGameArea.start();
-    
+
     // Set gravity
-    myGameArea.engine.world.gravity.y = 1;
-    
+    myGameArea.engine.world.gravity.y = 1.7;
+
     // Create world boundaries
     createBoundaries();
-    
+
     // Create game components
     window.allComponents = createComponents();
 }
