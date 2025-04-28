@@ -1,3 +1,4 @@
+//mardi, 25 mars 2025, 08:22:46. Tsybulevskyi Maksym
 window.myGameArea = {
     canvas: document.createElement("canvas"),
     start: function () {

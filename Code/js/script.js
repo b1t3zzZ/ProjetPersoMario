@@ -1,3 +1,5 @@
+//lundi, 17 mars 2025, 10:13:27. Tsybulevskyi Maksym
+
 //Функция отвечающая за исчезание кнопки при нажатии
 function hideButtonStart() {
     const hide = document.getElementById("hide")

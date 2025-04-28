@@ -1,3 +1,5 @@
+//mardi, 18 mars 2025, 14:11:48. Tsybulevskyi Maksym
+
 // Matter.js module aliases
 var Engine = Matter.Engine,
     Render = Matter.Render,
@@ -7,10 +9,11 @@ var Engine = Matter.Engine,
     World = Matter.World,
     Body = Matter.Body;
 
+window.isJumping = false;
+window.jumpStartTime = 0;
 window.myGamePiece = null;
 window.allComponents = [];
 window.physicsObjects = {}; // Store references to physics bodies
-
 
 function createComponents() {
     const components = [];
@@ -19,8 +22,8 @@ function createComponents() {
         "####################################",
         "#..................................#",
         "#..................................#",
-        ".................==................#",
-        "...................................#",
+        "#................==................#",
+        "#..................................#",
         "#..................................#",
         "#..................................#",
         "#..................................#",
@@ -44,23 +47,25 @@ function createComponents() {
 
             switch (char) {
                 case '#':
-                    const terrain = new component(40, 40, './images/terraMario.png', x, y, true);
+                    const terrain = new Component(40, 40, './images/terraMario.png', x, y, true);
                     components.push(terrain);
                     break;
                 case '=':
-                    const block = new component(40, 40, './images/blockMario.png', x, y, true);
+                    const block = new Component(40, 40, './images/blockMario.png', x, y, true);
                     components.push(block);
                     break;
                 case '@':
-                    myGamePiece = new component(35, 55, "./images/playerMario.png", x, y, false);
+                    myGamePiece = new Component(35, 55, "./images/playerMario.png", x, y, false);
+                    myGamePiece.sensorOffset = 5;
+                    Body.setInertia(myGamePiece.body, Infinity);
                     break;
                 case 'O':
-                    const lucky = new component(40, 40, './images/luckyMario.png', x, y, true);
+                    const lucky = new Component(40, 40, './images/luckyMario.png', x, y, true);
                     components.push(lucky);
                     break;
                 case '^':
                 case '<':
-                    const mushroom = new component(35, 35, './images/mushroomMario.png', x, y, false);
+                    const mushroom = new Component(35, 35, './images/mushroomMario.png', x, y, false);
                     components.push(mushroom);
                     break;
             }
@@ -70,7 +75,7 @@ function createComponents() {
     return components;
 }
 
-function component(width, height, imageSrc, x, y, isStatic = false) {
+function Component(width, height, imageSrc, x, y, isStatic = false, frameCount = 1) {
     this.width = width;
     this.height = height;
     this.x = x;
@@ -79,7 +84,8 @@ function component(width, height, imageSrc, x, y, isStatic = false) {
     this.image.src = imageSrc;
     this.isStatic = isStatic;
     this.isOnGround = false;
-    // Create Matter.js body
+    this.spriteFrames = frameCount;
+
     const options = {
         isStatic: isStatic,
         friction: 0.05,
@@ -87,29 +93,23 @@ function component(width, height, imageSrc, x, y, isStatic = false) {
         density: isStatic ? 1 : 0.1
     };
 
-    // Create physics body
     this.body = Bodies.rectangle(x + width / 2, y + height / 2, width, height, options);
 
-    // Add to Matter.js world
     World.add(myGameArea.engine.world, this.body);
 
-    // Store reference to physics body
     const bodyId = Math.random().toString(36).substr(2, 9);
     this.bodyId = bodyId;
     physicsObjects[bodyId] = this.body;
 
     this.update = function () {
         if (this.image.complete) {
-            // Update position and rotation from physics engine
             const pos = this.body.position;
             const angle = this.body.angle;
 
-            // Save context, translate and rotate
             myGameArea.context.save();
             myGameArea.context.translate(pos.x, pos.y);
             myGameArea.context.rotate(angle);
 
-            // Draw image centered
             myGameArea.context.drawImage(
                 this.image,
                 -this.width / 2,
@@ -118,10 +118,8 @@ function component(width, height, imageSrc, x, y, isStatic = false) {
                 this.height
             );
 
-            // Restore context
             myGameArea.context.restore();
 
-            // Update visual position properties to match physics body
             this.x = pos.x - this.width / 2;
             this.y = pos.y - this.height / 2;
         }
@@ -131,14 +129,11 @@ function component(width, height, imageSrc, x, y, isStatic = false) {
         const marioJump = new Audio("./sounds/mario-jump.mp3");
         marioJump.volume = 0.08;
 
+        if (this.isOnGround) {
 
+            Body.setVelocity(this.body, { x: this.body.velocity.x, y: -10 });
 
-    
-        // Check if character is on ground
-        const yVelocity = Math.abs(this.body.velocity.y);
-        if (yVelocity < 0.1) {
-            // Apply upward force
-            Body.setVelocity(this.body, { x: this.body.velocity.x, y: -14 });
+            this.isOnGround = false;
 
             if (!marioJump.paused) {
                 marioJump.currentTime = 0;
@@ -151,40 +146,85 @@ function component(width, height, imageSrc, x, y, isStatic = false) {
 window.updateGameArea = function () {
     myGameArea.clear();
 
-    // Process keyboard inputs
     if (myGamePiece) {
+        checkIfOnGround();
+
         let xVelocity = 0;
 
         if (myGameArea.keys && myGameArea.keys[65]) xVelocity = -4; // A key
         if (myGameArea.keys && myGameArea.keys[68]) xVelocity = 4;  // D key
-        if (myGameArea.keys && myGameArea.keys[87]) myGamePiece.jump(); // W key
+        if (myGameArea.keys && myGameArea.keys[87]) {
+            if (!isJumping && myGamePiece.isOnGround) {
+                isJumping = true;
+                jumpStartTime = Date.now();
+                myGamePiece.jump();
+            }
+        } else {
+            isJumping = false;
+        }
 
-        // Update player physics velocity
         if (myGamePiece.body) {
             Body.setVelocity(myGamePiece.body, {
                 x: xVelocity,
                 y: myGamePiece.body.velocity.y
             });
         }
+        
+        Body.setAngle(myGamePiece.body, 0);
     }
 
-    // Update all game components
     allComponents.forEach((comp) => {
         comp.update();
     });
+
+    // Отладочная отрисовка сенсора под персонажем(Débogage)
+    if (myGamePiece) {
+        const pos = myGamePiece.body.position;
+        const sensorWidth = myGamePiece.width * 0.9;
+        const sensorHeight = 5;
+
+        myGameArea.context.save();
+        myGameArea.context.strokeStyle = myGamePiece.isOnGround ? 'green' : 'red';
+        myGameArea.context.lineWidth = 2;
+        myGameArea.context.strokeRect(
+            pos.x - sensorWidth / 2,
+            pos.y + myGamePiece.height / 2,
+            sensorWidth,
+            sensorHeight
+        );
+        myGameArea.context.restore();
+
+    }
+
+    if(isJumping){
+        const now = Date.now();
+        const jumpDuration = now - jumpStartTime;
+
+        if(jumpDuration < 200){
+            Body.setVelocity(myGamePiece.body, {
+                x: myGamePiece.body.velocity.x,
+                y: myGamePiece.body.velocity.y - 0.5
+            })
+        }
+    }
+
+
+
+
+
+
 
     if (myGamePiece) {
         myGamePiece.update();
     }
 };
 
-// Set up world boundaries
+// Создание границ мира
 function createBoundaries() {
     const thickness = 50;
     const worldWidth = myGameArea.canvas.width;
     const worldHeight = myGameArea.canvas.height;
 
-    // Ground
     const ground = Bodies.rectangle(
         worldWidth / 2,
         worldHeight + thickness / 2,
@@ -193,7 +233,6 @@ function createBoundaries() {
         { isStatic: true }
     );
 
-    // Left wall
     const leftWall = Bodies.rectangle(
         -thickness / 2,
         worldHeight / 2,
@@ -202,7 +241,6 @@ function createBoundaries() {
         { isStatic: true }
     );
 
-    // Right wall
     const rightWall = Bodies.rectangle(
         worldWidth + thickness / 2,
         worldHeight / 2,
@@ -211,20 +249,38 @@ function createBoundaries() {
         { isStatic: true }
     );
 
-    // Add walls to world
     World.add(myGameArea.engine.world, [ground, leftWall, rightWall]);
+}
+
+// Проверка стоит ли игрок на земле
+function checkIfOnGround() {
+    if (!myGamePiece) return;
+
+    const sensorWidth = myGamePiece.width * 0.9; // <-- исправил здесь!
+    const sensorHeight = 5;
+    const pos = myGamePiece.body.position;
+
+    const sensor = {
+        min: { x: pos.x - sensorWidth / 2, y: pos.y + myGamePiece.height / 2 },
+        max: { x: pos.x + sensorWidth / 2, y: pos.y + myGamePiece.height / 2 + sensorHeight }
+    };
+
+    const allBodies = Matter.Composite.allBodies(myGameArea.engine.world);
+
+    const collisions = Matter.Query.region(allBodies, sensor);
+
+    const touching = collisions.filter(body => body !== myGamePiece.body);
+
+    myGamePiece.isOnGround = touching.length > 0;
 }
 
 function startGame() {
     myGameArea.start();
 
-    // Set gravity
-    myGameArea.engine.world.gravity.y = 1.7;
+    myGameArea.engine.world.gravity.y = 2.1;
 
-    // Create world boundaries
     createBoundaries();
 
-    // Create game components
     window.allComponents = createComponents();
 }
 
