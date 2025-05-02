@@ -1,6 +1,3 @@
-//mardi, 18 mars 2025, 14:11:48. Tsybulevskyi Maksym
-
-// Matter.js module aliases
 var Engine = Matter.Engine,
     Render = Matter.Render,
     Runner = Matter.Runner,
@@ -13,7 +10,7 @@ window.isJumping = false;
 window.jumpStartTime = 0;
 window.myGamePiece = null;
 window.allComponents = [];
-window.physicsObjects = {}; // Store references to physics bodies
+window.physicsObjects = {};
 
 function createComponents() {
     const components = [];
@@ -23,8 +20,8 @@ function createComponents() {
         "#..................................#",
         "#..................................#",
         "#................==................#",
-        "#..................................#",
-        "#..................................#",
+        "...................................#",
+        "...................................#",
         "#..................................#",
         "#..................................#",
         "#...............=OO=...............#",
@@ -59,10 +56,24 @@ function createComponents() {
                     myGamePiece.sensorOffset = 5;
                     Body.setInertia(myGamePiece.body, Infinity);
                     break;
-                case 'O':
-                    const lucky = new Component(40, 40, './images/luckyMario.png', x, y, true);
-                    components.push(lucky);
-                    break;
+                    case 'O':
+                        const lucky = new Component(40, 40, './images/luckyMario.png', x, y, true);
+                        lucky.type = 'lucky';
+                        lucky.used = false;
+                        components.push(lucky);
+                    
+                        // 🟦 Сенсор — чуть ниже lucky-блока
+                        const plate = Bodies.rectangle(x + 20, y + 45, 30, 10, {
+                            isStatic: true,
+                            isSensor: true,
+                            label: 'luckySensor'
+                        });
+                    
+                        plate.luckyBlock = lucky; // Привязка
+                        World.add(myGameArea.engine.world, plate);
+                    
+                        break;
+                    
                 case '^':
                 case '<':
                     const mushroom = new Component(35, 35, './images/mushroomMario.png', x, y, false);
@@ -85,6 +96,8 @@ function Component(width, height, imageSrc, x, y, isStatic = false, frameCount =
     this.isStatic = isStatic;
     this.isOnGround = false;
     this.spriteFrames = frameCount;
+    this.type = imageSrc.includes('luckyMario.png') ? 'lucky' : 'default';
+    this.used = false;
 
     const options = {
         isStatic: isStatic,
@@ -94,7 +107,6 @@ function Component(width, height, imageSrc, x, y, isStatic = false, frameCount =
     };
 
     this.body = Bodies.rectangle(x + width / 2, y + height / 2, width, height, options);
-
     World.add(myGameArea.engine.world, this.body);
 
     const bodyId = Math.random().toString(36).substr(2, 9);
@@ -102,27 +114,20 @@ function Component(width, height, imageSrc, x, y, isStatic = false, frameCount =
     physicsObjects[bodyId] = this.body;
 
     this.update = function () {
-        if (this.image.complete) {
-            const pos = this.body.position;
-            const angle = this.body.angle;
+        const ctx = myGameArea?.context;
+        if (!ctx || !this.image.complete) return;
 
-            myGameArea.context.save();
-            myGameArea.context.translate(pos.x, pos.y);
-            myGameArea.context.rotate(angle);
+        const pos = this.body.position;
+        const angle = this.body.angle;
 
-            myGameArea.context.drawImage(
-                this.image,
-                -this.width / 2,
-                -this.height / 2,
-                this.width,
-                this.height
-            );
+        ctx.save();
+        ctx.translate(pos.x, pos.y);
+        ctx.rotate(angle);
+        ctx.drawImage(this.image, -this.width / 2, -this.height / 2, this.width, this.height);
+        ctx.restore();
 
-            myGameArea.context.restore();
-
-            this.x = pos.x - this.width / 2;
-            this.y = pos.y - this.height / 2;
-        }
+        this.x = pos.x - this.width / 2;
+        this.y = pos.y - this.height / 2;
     };
 
     this.jump = function () {
@@ -130,9 +135,7 @@ function Component(width, height, imageSrc, x, y, isStatic = false, frameCount =
         marioJump.volume = 0.08;
 
         if (this.isOnGround) {
-
-            Body.setVelocity(this.body, { x: this.body.velocity.x, y: -10 });
-
+            Body.setVelocity(this.body, { x: this.body.velocity.x, y: -8 });
             this.isOnGround = false;
 
             if (!marioJump.paused) {
@@ -151,8 +154,9 @@ window.updateGameArea = function () {
 
         let xVelocity = 0;
 
-        if (myGameArea.keys && myGameArea.keys[65]) xVelocity = -4; // A key
-        if (myGameArea.keys && myGameArea.keys[68]) xVelocity = 4;  // D key
+        if (myGameArea.keys && myGameArea.keys[65]) xVelocity = -5;
+        if (myGameArea.keys && myGameArea.keys[68]) xVelocity = 5;
+
         if (myGameArea.keys && myGameArea.keys[87]) {
             if (!isJumping && myGamePiece.isOnGround) {
                 isJumping = true;
@@ -163,13 +167,11 @@ window.updateGameArea = function () {
             isJumping = false;
         }
 
-        if (myGamePiece.body) {
-            Body.setVelocity(myGamePiece.body, {
-                x: xVelocity,
-                y: myGamePiece.body.velocity.y
-            });
-        }
-        
+        Body.setVelocity(myGamePiece.body, {
+            x: xVelocity,
+            y: myGamePiece.body.velocity.y
+        });
+
         Body.setAngle(myGamePiece.body, 0);
     }
 
@@ -177,86 +179,39 @@ window.updateGameArea = function () {
         comp.update();
     });
 
-    // Отладочная отрисовка сенсора под персонажем(Débogage)
-    if (myGamePiece) {
-        const pos = myGamePiece.body.position;
-        const sensorWidth = myGamePiece.width * 0.9;
-        const sensorHeight = 5;
-
-        myGameArea.context.save();
-        myGameArea.context.strokeStyle = myGamePiece.isOnGround ? 'green' : 'red';
-        myGameArea.context.lineWidth = 2;
-        myGameArea.context.strokeRect(
-            pos.x - sensorWidth / 2,
-            pos.y + myGamePiece.height / 2,
-            sensorWidth,
-            sensorHeight
-        );
-        myGameArea.context.restore();
-
-    }
-
-    if(isJumping){
+    if (isJumping) {
         const now = Date.now();
         const jumpDuration = now - jumpStartTime;
 
-        if(jumpDuration < 200){
+        if (jumpDuration < 100) {
             Body.setVelocity(myGamePiece.body, {
                 x: myGamePiece.body.velocity.x,
-                y: myGamePiece.body.velocity.y - 0.5
-            })
+                y: myGamePiece.body.velocity.y - 0.7
+            });
         }
     }
-
-
-
-
-
-
 
     if (myGamePiece) {
         myGamePiece.update();
     }
 };
 
-// Создание границ мира
 function createBoundaries() {
     const thickness = 50;
     const worldWidth = myGameArea.canvas.width;
     const worldHeight = myGameArea.canvas.height;
 
-    const ground = Bodies.rectangle(
-        worldWidth / 2,
-        worldHeight + thickness / 2,
-        worldWidth + thickness * 2,
-        thickness,
-        { isStatic: true }
-    );
-
-    const leftWall = Bodies.rectangle(
-        -thickness / 2,
-        worldHeight / 2,
-        thickness,
-        worldHeight * 2,
-        { isStatic: true }
-    );
-
-    const rightWall = Bodies.rectangle(
-        worldWidth + thickness / 2,
-        worldHeight / 2,
-        thickness,
-        worldHeight * 2,
-        { isStatic: true }
-    );
+    const ground = Bodies.rectangle(worldWidth / 2, worldHeight + thickness / 2, worldWidth + thickness * 2, thickness, { isStatic: true });
+    const leftWall = Bodies.rectangle(-thickness / 2, worldHeight / 2, thickness, worldHeight * 2, { isStatic: true });
+    const rightWall = Bodies.rectangle(worldWidth + thickness / 2, worldHeight / 2, thickness, worldHeight * 2, { isStatic: true });
 
     World.add(myGameArea.engine.world, [ground, leftWall, rightWall]);
 }
 
-// Проверка стоит ли игрок на земле
 function checkIfOnGround() {
     if (!myGamePiece) return;
 
-    const sensorWidth = myGamePiece.width * 0.9; // <-- исправил здесь!
+    const sensorWidth = myGamePiece.width * 0.9;
     const sensorHeight = 5;
     const pos = myGamePiece.body.position;
 
@@ -266,23 +221,83 @@ function checkIfOnGround() {
     };
 
     const allBodies = Matter.Composite.allBodies(myGameArea.engine.world);
-
     const collisions = Matter.Query.region(allBodies, sensor);
-
     const touching = collisions.filter(body => body !== myGamePiece.body);
-
     myGamePiece.isOnGround = touching.length > 0;
 }
 
-function startGame() {
-    myGameArea.start();
+function triggerLuckyBlock(block) {
+    if (block.used) return;
+    console.log("🎁 Активирован lucky-блок!");
+    block.used = true;
 
-    myGameArea.engine.world.gravity.y = 2.1;
+    // Эффект "подпрыгивания" блока
+    Body.translate(block.body, { x: 0, y: -5 });
+    setTimeout(() => {
+        Body.translate(block.body, { x: 0, y: 5 });
+    }, 100);
 
-    createBoundaries();
+    // Замена изображения блока
+    const newImage = new Image();
+    newImage.onload = () => {
+        block.image = newImage;
+    };
+    newImage.src = './images/blockMario.png';
 
-    window.allComponents = createComponents();
+    // Создание и "выпрыгивание" гриба
+    const coin = new Component(35, 35, './images/coinMario.png', block.x, block.y - 40, false);
+    Body.setVelocity(coin.body, { x: 0.7, y: -5 }); // вверх и вправо
+    allComponents.push(coin);
 }
 
-// Initialize the game
+
+function startGame() {
+    myGameArea.start();
+    myGameArea.engine.world.gravity.y = 3;
+
+    createBoundaries();
+    window.allComponents = createComponents();
+
+    Matter.Events.on(myGameArea.engine, "collisionActive", function (event) {
+        const player = myGamePiece?.body;
+        if (!player) return;
+        const luckyTakes = new Audio("./sounds/mario-lucky-takes.mp3");
+        luckyTakes.volume = 0.38;
+
+        event.pairs.forEach((pair) => {
+            const { bodyA, bodyB } = pair;
+    
+            const sensor = [bodyA, bodyB].find(b => b.label === 'luckySensor');
+            const playerTouch = [bodyA, bodyB].find(b => b === player);
+    
+            if (sensor && playerTouch) {
+                const lucky = sensor.luckyBlock;
+                if (lucky && !lucky.used) {
+                    triggerLuckyBlock(lucky);
+                    luckyTakes.play();
+                }
+            }
+    
+            // Проверка "стоя на объекте"
+            const otherBody = (bodyA === player) ? bodyB :
+                              (bodyB === player) ? bodyA : null;
+    
+            if (!otherBody) return;
+    
+            for (let comp of allComponents) {
+                if (comp.body === otherBody) {
+                    const playerBottom = player.position.y + myGamePiece.height / 2;
+                    const blockTop = comp.body.position.y - comp.height / 2;
+    
+                    const standing = playerBottom <= blockTop + 5 && player.velocity.y >= 0;
+                    if (standing) {
+                        myGamePiece.isOnGround = true;
+                    }
+                }
+            }
+        });
+    });
+    
+}
+
 window.onload = startGame;

@@ -128,3 +128,22 @@ canvas {
   border: 1px solid #000000e7;
   background-color: lightblue;
 }
+
+.timer{
+  position: absolute;
+  top: 50px;
+  right: 240px;
+  padding: 4px;
+  background: white;
+}
+
+.score{
+  position: absolute;
+  top: 50px;
+  padding: 4px;
+  background: white;
+}
+
+
+
+

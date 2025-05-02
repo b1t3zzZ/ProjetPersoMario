@@ -9,7 +9,7 @@ window.myGameArea = {
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 
-        this.interval = setInterval(window.updateGameArea, 10);
+        this.interval = setInterval(window.updateGameArea, 1);
 
         // Initialize Matter.js physics engine
         this.engine = Engine.create();
