@@ -19,9 +19,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px gray solid;
+  border: 5px rgb(255, 0, 0) solid;
   background-color: white;
-
+  border-radius: 20px;
 }
 
 .mario {
@@ -120,6 +120,8 @@ body {
   display: none;
   width: 75vw;
   height: 75vh;
+  border: 5px rgb(255, 0, 0) solid;
+  border-radius: 20px;
   /*display: block;*/
 }
 
@@ -127,23 +129,120 @@ canvas {
   display: none;
   border: 1px solid #000000e7;
   background-color: lightblue;
+  border: 5px rgb(255, 0, 0) solid;
+  border-radius: 20px;
 }
 
-.timer{
+.timer {
   position: absolute;
   top: 50px;
   right: 240px;
   padding: 4px;
   background: white;
+  color: #fff; /* Белый цвет текста для контраста */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Тень для яркости */
+    font-size: 3em; /* Ретро размер */
+    padding: 20px;
+    background-color: #e53935; /* Более яркий красный для таймера */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
-.score{
+.score {
   position: absolute;
   top: 50px;
   padding: 4px;
   background: white;
+  color: #fff; /* Белый цвет текста для контраста */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Тень для яркости */
+    font-size: 3em; /* Ретро размер */
+    padding: 20px;
+    background-color: #d32f2f; /* Красный фон, как шляпа Марио */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 
 
+.lostGame {
+  display: none; /* по умолчанию скрыто, показать через JS при проигрыше */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 600px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 5px solid #ff0000;
+  border-radius: 20px;
+  text-align: center;
+  padding: 40px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
 
+.textlost {
+  font-size: 2rem;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  color: #d90000;
+  margin-bottom: 30px;
+  line-height: 1.4;
+}
+.styleButtonLost {
+  margin: 10px;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  background-color: #ffcc00;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.styleButtonLost:hover {
+  background-color: #ffaa00;
+  transform: scale(1.05);
+}
+.styleButtonLost:active {
+  background-color: #e69500;
+  transform: scale(0.98);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.endOfGame{
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+/* Стиль для текста "Merci pour jouer" с плавным переливом */
+.endText {
+  font-family: 'Press Start 2P', cursive; /* Ретро-игровой шрифт */
+  font-size: 60px;                        /* Размер текста */
+  font-weight: bold;                      /* Жирный текст */
+  text-align: center;                     /* Выравнивание по центру */
+  text-transform: uppercase;              /* Верхний регистр */
+  letter-spacing: 5px;                    /* Межбуквенное расстояние */
+  margin-top: 50px;                      /* Отступ сверху */
+  background: linear-gradient(45deg, #ff0000, #ffcc00, #00ff00, #0000ff, #ff00ff); /* Градиент */
+  background-size: 400% 400%;             /* Устанавливаем размер для анимации */
+  -webkit-background-clip: text;          /* Применяем градиент к тексту */
+  color: transparent;                     /* Делает текст прозрачным, чтобы градиент был виден */
+  animation: colorCycle 8s ease-in-out infinite; /* Плавная анимация с более долгим циклом */
+}
+
+/* Анимация для плавного переливания цветов */
+@keyframes colorCycle {
+  0% {
+      background-position: 0% 50%; /* Начальное положение градиента */
+  }
+  25% {
+      background-position: 50% 50%; /* Позиция градиента на 25% */
+  }
+  50% {
+      background-position: 100% 50%; /* Позиция градиента на 50% */
+  }
+  75% {
+      background-position: 50% 50%; /* Позиция градиента на 75% */
+  }
+  100% {
+      background-position: 0% 50%; /* Возвращаем начальную позицию */
+  }
+}

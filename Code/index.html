@@ -14,7 +14,7 @@
     <div>
         <h1 class="score" id="score">Score : 0</h1>
         <h1 class="timer" id="timer">0:00:00</h1>
-        
+
     </div>
     <!-- Основной класс -->
     <div class="gameWindow">
@@ -28,7 +28,27 @@
         </button>
         <!-- Запуск игры -->
         <div class="game" onload="startGame()">
-            
+
+        </div>
+        <div id="lostGame" class="lostGame">
+
+            <h1 class="textlost">
+                Tu as perdu, est-ce que tu veux recommencer ?
+            </h1>
+
+            <button class="styleButtonLost" id="restartBtn" onclick="restartGame()">    
+                Oui
+            </button>
+
+            <button class="styleButtonLost" onclick="endGame()">
+                Non
+            </button>
+        
+        </div>
+        <div class="endOfGame" id="end" >
+            <h1 class="endText">
+                Merci pour jouer
+            </h1>
         </div>
     </div>
     <!-- Иконки на экране -->

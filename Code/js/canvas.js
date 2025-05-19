@@ -3,13 +3,13 @@ window.myGameArea = {
     canvas: document.createElement("canvas"),
     start: function () {
         this.canvas.id = "canvasStart";
-        this.canvas.width = window.innerWidth * 0.75;
-        this.canvas.height = 720;
+        this.canvas.width = window.innerWidth * 0.745;
+        this.canvas.height = window.innerHeight * 0.74;
         this.canvas.style.position = "absolute";
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 
-        this.interval = setInterval(window.updateGameArea, 1);
+        this.interval = setInterval(window.updateGameArea, 10);
 
         // Initialize Matter.js physics engine
         this.engine = Engine.create();
