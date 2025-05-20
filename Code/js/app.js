@@ -80,10 +80,55 @@ function createComponents() {
                     const konec = new Component(160, 40, './images/konecTrybiMario.png', x, y, true);
                     components.push(konec);
                     break;
+
                 case '1':
                     const wvoid = new Component(50, 50, "./images/barierMario - Copie.png", x, y, true);
                     wvoid.type = 'wvoid'
                     components.push(wvoid);
+                    break;
+
+                case "2":
+                    const flag = new Component(80, 350, "./images/flagMario.png", x, y, true)
+                    flag.type = "flag";
+                    components.push(flag);
+
+                    const flagSensor = Bodies.rectangle(x + 20, y + 45, 30, 10, {
+                        isStatic: true,
+                        isSensor: true,
+                        label: 'flag'
+                    });
+                    flagSensor.flag = flag;
+                    World.add(myGameArea.engine.world, flagSensor);
+                    break;
+
+                case "4":
+                    const nothing = new Component(50, 50, "./images/nothingMario.png", x, y, true);
+                    nothing.type = "nothing"
+                    nothing.used = false;
+                    components.push(nothing);
+
+                    // Сенсор под блоком
+                    const nameplate = Bodies.rectangle(x + 20, y + 45, 30, 10, {
+                        isStatic: true,
+                        isSensor: true,
+                        label: 'nothing'
+                    });
+                    nameplate.nothing = nothing;
+                    World.add(myGameArea.engine.world, nameplate);
+                    break;
+                case "5":
+                    const changes = new Component(50, 50, "./images/barierMario - Copie.png", x, y, true);
+                    changes.type = "changes";
+                    components.push(changes);
+
+                    // Сенсор под блоком
+                    const changesSensor = Bodies.rectangle(x + 20, y + 45, 30, 10, {
+                        isStatic: true,
+                        isSensor: true,
+                        label: 'changes'
+                    });
+                    changesSensor.changes = changes;
+                    World.add(myGameArea.engine.world, changesSensor);
                     break;
             }
         }
@@ -143,7 +188,7 @@ function Component(width, height, imageSrc, x, y, isStatic = false, frameCount =
         marioJump.volume = 0.08;
 
         if (this.isOnGround) {
-            Body.setVelocity(this.body, { x: this.body.velocity.x, y: -15 });
+            Body.setVelocity(this.body, { x: this.body.velocity.x, y: -20 });
             this.isOnGround = false;
 
             if (!marioJump.paused) marioJump.currentTime = 0;
@@ -266,6 +311,13 @@ function checkIfOnGround() {
     myGamePiece.isOnGround = touching.length > 0;
 }
 
+function nameplate(nothing) {
+    if (nothing.used) return;
+
+    alert("Il n'y a absolument rien ici");
+    nothing.used = true;
+}
+
 // Активация лаки-блока
 function triggerLuckyBlock(block) {
     if (block.used) return;
@@ -346,7 +398,7 @@ function updateMushroomsAI() {
         if (comp.image.src.includes('mushroomMario.png')) {
             const mushroomPos = comp.body.position;
 
-            const visionRadius = 600;
+            const visionRadius = 400;
             const dx = playerPos.x - mushroomPos.x;
             const dy = playerPos.y - mushroomPos.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
@@ -371,6 +423,7 @@ function updateMushroomsAI() {
 }
 
 
+
 // Запуск игры
 function startGame() {
     myGameArea.start();
@@ -387,6 +440,7 @@ function startGame() {
         event.pairs.forEach(pair => {
             const { bodyA, bodyB } = pair;
             const sensor = [bodyA, bodyB].find(b => b.label === 'luckySensor');
+            const sensorOfNamePlate = [bodyA, bodyB].find(b => b.label === 'nothing');
             const playerTouch = [bodyA, bodyB].find(b => b === player);
 
 
@@ -398,16 +452,46 @@ function startGame() {
             if (comp && comp.type === 'wvoid') {
                 console.log("💀 Игрок упал!");
                 World.remove(myGameArea.engine.world, myGamePiece.body);
-                stopTimer()
+                stopTimer();
                 lostGame();
                 return;
             }
+
+
+            if (comp && comp.type === "flag") {
+                if (scoreValue > 5000) {
+                    console.log("You're win!");
+                    World.remove(myGameArea.engine.world, myGamePiece.body);
+                    stopTimer();
+                    gameWin();
+                } else {
+                    alert("Mario n'est pas content de toi. Parce que tu ne m'as pas apporté 5000 pièces, tu dois tout recommencer depuis le début.");
+                    location.reload();
+                }
+                // Отталкивание персонажа при столкновении с флагом
+                const pushBackForce = 10.1; // уменьшенная сила отталкивания
+                const angle = Math.atan2(myGamePiece.body.position.y - comp.body.position.y, myGamePiece.body.position.x - comp.body.position.x);
+                const force = Matter.Vector.create(Math.cos(angle) * pushBackForce, Math.sin(angle) * pushBackForce);
+
+                // Применяем силу отталкивания к персонажу
+                Matter.Body.applyForce(myGamePiece.body, myGamePiece.body.position, force);
+            }
+
+
+
 
             // Удар по lucky-блоку
             if (sensor && playerTouch) {
                 const lucky = sensor.luckyBlock;
                 if (lucky && !lucky.used) {
                     triggerLuckyBlock(lucky);
+                }
+            }
+
+            if (sensorOfNamePlate && playerTouch) {
+                const tablichka = sensorOfNamePlate.nothing;
+                if (tablichka && !tablichka.used) {
+                    nameplate(tablichka);
                 }
             }
 

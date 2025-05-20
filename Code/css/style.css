@@ -246,3 +246,55 @@ canvas {
       background-position: 0% 50%; /* Возвращаем начальную позицию */
   }
 }
+
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.gameWin {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        #ff0000,
+        #ff0000 20px,
+        #cc0000 20px,
+        #cc0000 40px
+    );
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 1s ease-out forwards;
+}
+
+.TextWin {
+    font-family: 'VT323', monospace;
+    font-size: 40px;
+    color: #fff200;
+    background: #8b0000;
+    padding: 40px 60px;
+    border: 6px dashed #ffcc00;
+    border-radius: 15px;
+    text-shadow: 2px 2px 0 #000;
+    box-shadow: 0 0 20px #ffcc00;
+    animation: bounce 1.2s ease-in-out infinite;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}

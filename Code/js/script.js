@@ -79,6 +79,16 @@ function lostGame() {
     restartLost.style.display = "block";
 }
 
+function gameWin() {
+    const gameWin = document.getElementById("gameWin");
+    const canvasStart = document.getElementById("canvasStart");
+
+    
+    canvasStart.style.display = "none";
+    gameWin.style.display = "flex";
+
+}
+
 function restartGame() {
     location.reload();
 }
