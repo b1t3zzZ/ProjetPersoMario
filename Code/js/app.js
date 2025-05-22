@@ -306,19 +306,6 @@ window.updateGameArea = function () {
     ctx.restore();
 };
 
-// Create world boundaries (commented out - infinite world)
-/*function createBoundaries() {
-    const thickness = 50;
-    const worldWidth = myGameArea.canvas.width;
-    const worldHeight = myGameArea.canvas.height;
-
-    const ground = Bodies.rectangle(worldWidth / 2, worldHeight + thickness / 2, worldWidth + thickness * 2, thickness, { isStatic: true });
-    const leftWall = Bodies.rectangle(-thickness / 2, worldHeight / 2, thickness, worldHeight * 2, { isStatic: true });
-    const rightWall = Bodies.rectangle(worldWidth + thickness / 2, worldHeight / 2, thickness, worldHeight * 2, { isStatic: true });
-
-    World.add(myGameArea.engine.world, [ground, leftWall, rightWall]);
-}*/
-
 // Check if player is standing on ground for jump mechanics
 function checkIfOnGround() {
     if (!myGamePiece) return;

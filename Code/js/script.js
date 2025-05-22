@@ -9,7 +9,7 @@ function hideButtonStart() {
 
     // Set smooth opacity transition for fade effect
     hide.style.transition = "opacity 1s ease";
-    
+
     // Start fade-out by setting opacity to 0
     hide.style.opacity = "0";
 
@@ -22,47 +22,38 @@ function hideButtonStart() {
     hide.disabled = true;
 }
 
-// Timer-related DOM elements and variables
-let timer = document.getElementById("timer");           // Timer display element
-let startBtn = document.getElementById("startBtn");     // Start button reference
-
-// Timer state variables
-let miliseconds = -1;                                   // Milliseconds counter (starts at -1)
-let seconds = 0;                                        // Seconds counter
-let minutes = 0;                                        // Minutes counter
-let interval;                                           // Variable to store timer interval
+let timer = document.getElementById("timer"); // Timer display element
+let interval;                                 // Reference to setInterval
+let startTime;                                // Timer start time
 
 /**
- * Timer update function - called every 10ms to update the game timer
- * Handles conversion between milliseconds, seconds, and minutes
- * Updates the timer display in MM:SS:MS format
+ * Starts the timer using accurate system time
  */
-function updateTime() {
-    miliseconds++;
-    
-    // Convert 100 milliseconds to 1 second
-    if (miliseconds === 100) {
-        seconds++;
-        miliseconds = 0;
-    }
-    
-    // Convert 60 seconds to 1 minute
-    if (seconds === 60) {
-        minutes++;
-        seconds = 0;
-    }
-    
-    // Update timer display with zero-padded values (e.g., "01:05:23")
-    timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${miliseconds.toString().padStart(2, '0')}`;
+function startTimer() {
+    startTime = Date.now(); // Store the start time
+    updateTime();           // Immediately show 00:00
+
+    interval = setInterval(updateTime, 1000); // Update every second
 }
 
 /**
- * Stop the game timer
- * Clears the interval to prevent further timer updates
+ * Updates the timer by calculating elapsed time
+ */
+function updateTime() {
+    const now = Date.now();
+    const elapsed = Math.floor((now - startTime) / 1000); // Elapsed seconds
+
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+
+    timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Stops the timer
  */
 function stopTimer() {
-    clearInterval(interval);                            // Stop the timer interval
-    // Note: Start button enabling functionality was mentioned in comment but not implemented
+    clearInterval(interval);
 }
 
 // Audio objects for game sounds
@@ -79,7 +70,7 @@ window.update = updateTime();
  */
 function openGameMario() {
     const canvasStart = document.getElementById("canvasStart");
-    
+
     // Delay execution by 760ms to sync with button hide animation
     setTimeout(function () {
         // Show the game canvas
@@ -92,8 +83,9 @@ function openGameMario() {
 
         console.log("openGameMario function called");
 
-        // Start the game timer (updates every 10ms)
-        interval = setInterval(updateTime, 10);
+        // Start the game timer (updates every second)
+        startTimer();
+
     }, 760);
 }
 
@@ -112,7 +104,7 @@ function endOfGameMusic() {
  */
 function lostGame() {
     const restartLost = document.getElementById("lostGame");     // Game over modal
-    const canvasStart = document.getElementById("canvasStart"); // Game canvas
+    const canvasStart = document.getElementById("canvasStart");  // Game canvas
 
     // Hide game canvas and show game over screen
     canvasStart.style.display = "none";
@@ -136,7 +128,7 @@ function marioDeath() {
 function gameWin() {
     const gameWin = document.getElementById("gameWin");         // Victory screen
     const canvasStart = document.getElementById("canvasStart"); // Game canvas
-    
+
     // Hide game canvas and show victory screen
     canvasStart.style.display = "none";
     gameWin.style.display = "flex";
@@ -158,7 +150,7 @@ function endGame() {
     const endGameMario = document.getElementById("end");        // Thank you screen
     const restartLost = document.getElementById("lostGame");    // Game over modal
 
-    console.log("'No' button pressed");                // Debug log
+    console.log("'No' button pressed");                         // Debug log
 
     // Hide game over modal and show thank you screen
     endGameMario.style.display = "flex";
