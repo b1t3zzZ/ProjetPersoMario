@@ -1,300 +1,332 @@
 /*mardi, 11 mars 2025, 14:35:50 Tsybulevskyi Maksym*/
+
+/* Main body styling - Full screen Mario background */
 body {
-  margin: 0;
-  overflow: hidden;
-  background-image: url("./../images/bg-mario.png");
-  background-size: cover;
-  background-position: center;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(5px);
+  margin: 0;                                           /* Remove default margins */
+  overflow: hidden;                                    /* Hide scrollbars for full screen experience */
+  background-image: url("./../images/bg-mario.png");   /* Mario-themed background image */
+  background-size: cover;                              /* Scale background to cover entire viewport */
+  background-position: center;                         /* Center the background image */
+  height: 100vh;                                       /* Full viewport height */
+  display: flex;                                       /* Use flexbox for centering */
+  justify-content: center;                             /* Center horizontally */
+  align-items: center;                                 /* Center vertically */
+  backdrop-filter: blur(5px);                          /* Apply subtle blur effect to background */
 }
 
+/* Main game window container */
 .gameWindow {
-  height: 75vh;
-  width: 75vw;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 5px rgb(255, 0, 0) solid;
-  background-color: white;
-  border-radius: 20px;
+  height: 75vh;                                        /* 75% of viewport height */
+  width: 75vw;                                         /* 75% of viewport width */
+  box-sizing: border-box;                              /* Include border in size calculations */
+  display: flex;                                       /* Flexbox for centering content */
+  justify-content: center;                             /* Center content horizontally */
+  align-items: center;                                 /* Center content vertically */
+  border: 5px rgb(255, 0, 0) solid;                   /* Red border matching Mario theme */
+  background-color: white;                             /* White background for game area */
+  border-radius: 20px;                                /* Rounded corners for modern look */
 }
 
+/* Mario character decoration - positioned on left side */
 .mario {
-  position: absolute;
-  right: 89.5%;
-  width: 10vw;
-  user-select: none;
+  position: absolute;                                  /* Absolute positioning for precise placement */
+  right: 89.5%;                                        /* Position from right edge */
+  width: 10vw;                                         /* Responsive width */
+  user-select: none;                                   /* Prevent text selection on image */
 }
 
+/* Flag decoration - positioned on right side */
 .drapeau {
-  position: absolute;
-  left: 82.5%;
-  height: 25vh;
-  user-select: none;
+  position: absolute;                                  /* Absolute positioning */
+  left: 82.5%;                                         /* Position from left edge */
+  height: 25vh;                                        /* Responsive height */
+  user-select: none;                                   /* Prevent text selection on image */
 }
 
-/* From Uiverse.io by Smit-Prajapati */
-/* From Uiverse.io by chase2k25 */
+/* Animated START button styling */
+/* Credits: Inspired by Uiverse.io designs by Smit-Prajapati and chase2k25 */
 .button {
-  user-select: none;
-  cursor: pointer;
-  padding: 12px 18px;
-  border-radius: 30px;
-  border: 5px solid #e50000;
-  /*display: none;*/
-  display: inline-block;
-  overflow: hidden;
-  background: red;
+  user-select: none;                                   /* Prevent text selection */
+  cursor: pointer;                                     /* Show pointer cursor on hover */
+  padding: 12px 18px;                                  /* Internal spacing */
+  border-radius: 30px;                                /* Rounded button shape */
+  border: 5px solid #e50000;                          /* Red border */
+  display: inline-block;                               /* Inline block display */
+  overflow: hidden;                                    /* Hide overflowing content */
+  background: red;                                     /* Red background */
+  /* Complex box shadow for 3D effect */
   box-shadow:
-    inset 6px 6px 10px rgba(255, 255, 255, 0.6),
-    inset -6px -6px 10px rgba(0, 0, 0, 0.3),
-    2px 2px 10px rgba(0, 0, 0, 0.3),
-    -2px -2px 10px rgba(255, 255, 255, 0.5);
+    inset 6px 6px 10px rgba(255, 255, 255, 0.6),     /* Inner light shadow (top-left) */
+    inset -6px -6px 10px rgba(0, 0, 0, 0.3),          /* Inner dark shadow (bottom-right) */
+    2px 2px 10px rgba(0, 0, 0, 0.3),                  /* Outer shadow */
+    -2px -2px 10px rgba(255, 255, 255, 0.5);          /* Outer light reflection */
+  /* Smooth transitions for interactions */
   transition:
-    box-shadow 0.3s ease,
-    transform 0.1s ease;
+    box-shadow 0.3s ease,                             /* Shadow transition */
+    transform 0.1s ease;                               /* Transform transition */
 }
 
+/* Individual letter styling in START button */
 .button span {
-  font-weight: 900;
-  font-size: 24px;
-  color: #db0000;
+  font-weight: 900;                                    /* Extra bold text */
+  font-size: 24px;                                     /* Large font size */
+  color: #db0000;                                      /* Dark red color */
+  /* Text shadow for 3D effect */
   text-shadow:
-    1px 1px 1px rgba(255, 255, 255, 0.4),
-    -1px -1px 1px rgba(0, 0, 0, 0.4);
-  position: relative;
-  display: inline-block;
-  transition: transform 0.3s ease-out;
-  z-index: 1;
-  padding: 0px 4px;
+    1px 1px 1px rgba(255, 255, 255, 0.4),            /* Light shadow */
+    -1px -1px 1px rgba(0, 0, 0, 0.4);                /* Dark shadow */
+  position: relative;                                  /* Relative positioning for animations */
+  display: inline-block;                               /* Inline block for individual transforms */
+  transition: transform 0.3s ease-out;                /* Smooth transform transition */
+  z-index: 1;                                          /* Ensure text is above other elements */
+  padding: 0px 4px;                                    /* Small horizontal padding */
 }
 
+/* Staggered animation delays for each letter */
 .button span:nth-child(1)::before {
-  transition-delay: 0ms;
+  transition-delay: 0ms;                               /* S - no delay */
 }
 
 .button span:nth-child(2)::before {
-  transition-delay: 100ms;
+  transition-delay: 100ms;                             /* T - 100ms delay */
 }
 
 .button span:nth-child(3)::before {
-  transition-delay: 200ms;
+  transition-delay: 200ms;                             /* A - 200ms delay */
 }
 
 .button span:nth-child(4)::before {
-  transition-delay: 300ms;
+  transition-delay: 300ms;                             /* R - 300ms delay */
 }
 
 .button span:nth-child(5)::before {
-  transition-delay: 400ms;
+  transition-delay: 400ms;                             /* T - 400ms delay */
 }
 
+/* Button hover effects */
 .button:hover span {
-  color: #d30000;
+  color: #d30000;                                      /* Darker red on hover */
 }
 
+/* Button active/pressed effects */
 .button:active span {
-  color: #f30000;
+  color: #f30000;                                      /* Brighter red when pressed */
   text-shadow:
-    1px 1px 1px rgba(255, 255, 255, 0.5),
-    -1px -1px 2px rgba(0, 0, 0, 0.5);
+    1px 1px 1px rgba(255, 255, 255, 0.5),            /* Enhanced light shadow */
+    -1px -1px 2px rgba(0, 0, 0, 0.5);                /* Enhanced dark shadow */
 }
 
+/* Letter bounce animation on hover */
 .button span:hover {
-  transform: translateY(-7px);
+  transform: translateY(-7px);                         /* Move letter up 7px */
 }
 
+/* Button press animation */
 .button:active {
   box-shadow:
-    inset 2px 2px 1px rgba(0, 0, 0, 0.3),
-    inset -2px -2px 1px rgba(255, 255, 255, 0.5);
-  transform: scale(0.98);
+    inset 2px 2px 1px rgba(0, 0, 0, 0.3),            /* Pressed inward shadow */
+    inset -2px -2px 1px rgba(255, 255, 255, 0.5);    /* Pressed inward highlight */
+  transform: scale(0.98);                              /* Slightly shrink button */
 }
 
+/* Game canvas container */
 .game {
-  display: none;
-  width: 75vw;
-  height: 75vh;
-  border: 5px rgb(255, 0, 0) solid;
-  border-radius: 20px;
-  /*display: block;*/
+  display: none;                                       /* Hidden by default, shown via JavaScript */
+  width: 75vw;                                         /* Match game window width */
+  height: 75vh;                                        /* Match game window height */
+  border: 5px rgb(255, 0, 0) solid;                   /* Red border */
+  border-radius: 20px;                                /* Rounded corners */
 }
 
+/* Canvas element styling */
 canvas {
-  display: none;
-  border: 1px solid #000000e7;
-  background-color: lightblue;
-  border: 5px rgb(255, 0, 0) solid;
-  border-radius: 20px;
+  display: none;                                       /* Hidden by default */
+  border: 1px solid #000000e7;                        /* Dark border */
+  background-color: lightblue;                         /* Light blue background (sky color) */
+  border: 5px rgb(255, 0, 0) solid;                   /* Red border override */
+  border-radius: 20px;                                /* Rounded corners */
 }
 
+/* Game timer display */
 .timer {
-  position: absolute;
-  top: 50px;
-  right: 240px;
-  padding: 4px;
-  background: white;
-  color: #fff; /* Белый цвет текста для контраста */
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Тень для яркости */
-    font-size: 3em; /* Ретро размер */
-    padding: 20px;
-    background-color: #e53935; /* Более яркий красный для таймера */
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  position: absolute;                                  /* Fixed position on screen */
+  top: 50px;                                           /* 50px from top */
+  right: 240px;                                        /* 240px from right edge */
+  padding: 4px;                                        /* Base padding */
+  background: white;                                   /* White background (overridden below) */
+  color: #fff;                                         /* White text for contrast */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);       /* Dark shadow for readability */
+  font-size: 3em;                                      /* Large retro-style font */
+  padding: 20px;                                       /* Override with larger padding */
+  background-color: #e53935;                           /* Bright red background */
+  border-radius: 10px;                                /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);          /* Drop shadow */
 }
 
+/* Game score display */
 .score {
-  position: absolute;
-  top: 50px;
-  padding: 4px;
-  background: white;
-  color: #fff; /* Белый цвет текста для контраста */
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Тень для яркости */
-    font-size: 3em; /* Ретро размер */
-    padding: 20px;
-    background-color: #d32f2f; /* Красный фон, как шляпа Марио */
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  position: absolute;                                  /* Fixed position on screen */
+  top: 50px;                                           /* 50px from top */
+  padding: 4px;                                        /* Base padding */
+  background: white;                                   /* White background (overridden below) */
+  color: #fff;                                         /* White text for contrast */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);       /* Dark shadow for readability */
+  font-size: 3em;                                      /* Large retro-style font */
+  padding: 20px;                                       /* Override with larger padding */
+  background-color: #d32f2f;                           /* Mario hat red background */
+  border-radius: 10px;                                /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);          /* Drop shadow */
 }
 
-
-
+/* Game Over screen modal */
 .lostGame {
-  display: none; /* по умолчанию скрыто, показать через JS при проигрыше */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  max-width: 600px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 5px solid #ff0000;
-  border-radius: 20px;
-  text-align: center;
-  padding: 40px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
+  display: none;                                       /* Hidden by default, shown via JavaScript */
+  position: absolute;                                  /* Positioned relative to viewport */
+  top: 50%;                                            /* Center vertically */
+  left: 50%;                                           /* Center horizontally */
+  transform: translate(-50%, -50%);                    /* Perfect centering with transform */
+  width: 80%;                                          /* 80% of parent width */
+  max-width: 600px;                                    /* Maximum width limit */
+  background: rgba(255, 255, 255, 0.95);              /* Semi-transparent white background */
+  border: 5px solid #ff0000;                          /* Red border */
+  border-radius: 20px;                                /* Rounded corners */
+  text-align: center;                                  /* Center text alignment */
+  padding: 40px;                                       /* Large padding for spacing */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);        /* Large drop shadow */
+  z-index: 1000;                                       /* High z-index to appear above game */
 }
 
+/* Game Over text styling */
 .textlost {
-  font-size: 2rem;
-  font-family: 'Comic Sans MS', cursive, sans-serif;
-  color: #d90000;
-  margin-bottom: 30px;
-  line-height: 1.4;
-}
-.styleButtonLost {
-  margin: 10px;
-  padding: 15px 30px;
-  font-size: 1.2rem;
-  background-color: #ffcc00;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.styleButtonLost:hover {
-  background-color: #ffaa00;
-  transform: scale(1.05);
-}
-.styleButtonLost:active {
-  background-color: #e69500;
-  transform: scale(0.98);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-.endOfGame{
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-/* Стиль для текста "Merci pour jouer" с плавным переливом */
-.endText {
-  font-family: 'Press Start 2P', cursive; /* Ретро-игровой шрифт */
-  font-size: 60px;                        /* Размер текста */
-  font-weight: bold;                      /* Жирный текст */
-  text-align: center;                     /* Выравнивание по центру */
-  text-transform: uppercase;              /* Верхний регистр */
-  letter-spacing: 5px;                    /* Межбуквенное расстояние */
-  margin-top: 50px;                      /* Отступ сверху */
-  background: linear-gradient(45deg, #ff0000, #ffcc00, #00ff00, #0000ff, #ff00ff); /* Градиент */
-  background-size: 400% 400%;             /* Устанавливаем размер для анимации */
-  -webkit-background-clip: text;          /* Применяем градиент к тексту */
-  color: transparent;                     /* Делает текст прозрачным, чтобы градиент был виден */
-  animation: colorCycle 8s ease-in-out infinite; /* Плавная анимация с более долгим циклом */
+  font-size: 2rem;                                     /* Large font size */
+  font-family: 'Comic Sans MS', cursive, sans-serif;   /* Playful font family */
+  color: #d90000;                                      /* Red color */
+  margin-bottom: 30px;                                 /* Space below text */
+  line-height: 1.4;                                    /* Improved line spacing */
 }
 
-/* Анимация для плавного переливания цветов */
+/* Game Over button styling */
+.styleButtonLost {
+  margin: 10px;                                        /* Margin around buttons */
+  padding: 15px 30px;                                  /* Button padding */
+  font-size: 1.2rem;                                   /* Button text size */
+  background-color: #ffcc00;                           /* Yellow background */
+  border: none;                                        /* Remove default border */
+  border-radius: 10px;                                /* Rounded corners */
+  cursor: pointer;                                     /* Pointer cursor */
+  transition: all 0.3s ease;                          /* Smooth transitions */
+}
+
+/* Game Over button hover effect */
+.styleButtonLost:hover {
+  background-color: #ffaa00;                           /* Darker yellow on hover */
+  transform: scale(1.05);                              /* Slightly enlarge */
+}
+
+/* Game Over button active/pressed effect */
+.styleButtonLost:active {
+  background-color: #e69500;                           /* Even darker yellow when pressed */
+  transform: scale(0.98);                              /* Slightly shrink */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);          /* Inset shadow effect */
+}
+
+/* End of game screen container */
+.endOfGame {
+  display: none;                                       /* Hidden by default */
+  justify-content: center;                             /* Center content horizontally */
+  align-items: center;                                 /* Center content vertically */
+}
+
+/* Animated "Thanks for playing" text */
+.endText {
+  font-family: 'Press Start 2P', cursive;             /* Retro gaming font */
+  font-size: 60px;                                     /* Large text size */
+  font-weight: bold;                                   /* Bold text */
+  text-align: center;                                  /* Center alignment */
+  text-transform: uppercase;                           /* All uppercase letters */
+  letter-spacing: 5px;                                 /* Space between letters */
+  margin-top: 50px;                                    /* Top margin */
+  /* Rainbow gradient background */
+  background: linear-gradient(45deg, #ff0000, #ffcc00, #00ff00, #0000ff, #ff00ff);
+  background-size: 400% 400%;                          /* Large background for animation */
+  -webkit-background-clip: text;                       /* Apply gradient to text only */
+  color: transparent;                                  /* Make text transparent to show gradient */
+  animation: colorCycle 8s ease-in-out infinite;       /* Smooth color cycling animation */
+}
+
+/* Rainbow color cycling animation */
 @keyframes colorCycle {
   0% {
-      background-position: 0% 50%; /* Начальное положение градиента */
+      background-position: 0% 50%;                     /* Start position */
   }
   25% {
-      background-position: 50% 50%; /* Позиция градиента на 25% */
+      background-position: 50% 50%;                    /* Quarter cycle */
   }
   50% {
-      background-position: 100% 50%; /* Позиция градиента на 50% */
+      background-position: 100% 50%;                   /* Half cycle */
   }
   75% {
-      background-position: 50% 50%; /* Позиция градиента на 75% */
+      background-position: 50% 50%;                    /* Three-quarter cycle */
   }
   100% {
-      background-position: 0% 50%; /* Возвращаем начальную позицию */
+      background-position: 0% 50%;                     /* Return to start */
   }
 }
 
+/* Import retro gaming font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
+/* Reset margin and padding for victory screen */
 body {
     margin: 0;
     padding: 0;
 }
 
+/* Victory screen full-screen overlay */
 .gameWin {
-    position: fixed;
-    inset: 0;
+    position: fixed;                                   /* Fixed position covering entire screen */
+    inset: 0;                                          /* Cover entire viewport (top, right, bottom, left: 0) */
+    /* Diagonal striped background pattern */
     background: repeating-linear-gradient(
-        45deg,
-        #ff0000,
-        #ff0000 20px,
-        #cc0000 20px,
-        #cc0000 40px
+        45deg,                                         /* 45-degree diagonal stripes */
+        #ff0000,                                       /* Red stripe */
+        #ff0000 20px,                                  /* Red stripe width */
+        #cc0000 20px,                                  /* Dark red stripe start */
+        #cc0000 40px                                   /* Dark red stripe width */
     );
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    animation: fadeIn 1s ease-out forwards;
+    display: none;                                     /* Hidden by default */
+    align-items: center;                               /* Center content vertically */
+    justify-content: center;                           /* Center content horizontally */
+    z-index: 10000;                                    /* Very high z-index to appear above everything */
+    animation: fadeIn 1s ease-out forwards;            /* Fade in animation */
 }
 
+/* Victory message text styling */
 .TextWin {
-    font-family: 'VT323', monospace;
-    font-size: 40px;
-    color: #fff200;
-    background: #8b0000;
-    padding: 40px 60px;
-    border: 6px dashed #ffcc00;
-    border-radius: 15px;
-    text-shadow: 2px 2px 0 #000;
-    box-shadow: 0 0 20px #ffcc00;
-    animation: bounce 1.2s ease-in-out infinite;
+    font-family: 'VT323', monospace;                   /* Retro monospace font */
+    font-size: 40px;                                   /* Large font size */
+    color: #fff200;                                    /* Bright yellow text */
+    background: #8b0000;                               /* Dark red background */
+    padding: 40px 60px;                                /* Large padding */
+    border: 6px dashed #ffcc00;                        /* Dashed yellow border */
+    border-radius: 15px;                               /* Rounded corners */
+    text-shadow: 2px 2px 0 #000;                      /* Black text shadow for depth */
+    box-shadow: 0 0 20px #ffcc00;                      /* Glowing yellow shadow */
+    animation: bounce 1.2s ease-in-out infinite;       /* Continuous bounce animation */
 }
 
-/* Анимации */
+/* Fade in animation for victory screen */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; }                               /* Start completely transparent */
+    to { opacity: 1; }                                 /* End completely opaque */
 }
 
+/* Bounce animation for victory text */
 @keyframes bounce {
     0%, 100% {
-        transform: translateY(0);
+        transform: translateY(0);                      /* Start and end at normal position */
     }
     50% {
-        transform: translateY(-15px);
+        transform: translateY(-15px);                  /* Move up 15px at midpoint */
     }
 }
